@@ -37,6 +37,7 @@ func getBookById(id string) (*book, error) {
 	return nil, errors.New("Book not found")
 }
 
+// GET book by id
 func bookById(c *gin.Context) {
 	id := c.Param("id")
 	book, err := getBookById(id)
@@ -49,9 +50,21 @@ func bookById(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, book)
 }
 
+// POST create a new book
+func createBook(c *gin.Context) {
+	var newBook book
+	if err := c.BindJSON(&newBook); err != nil {
+		return
+	}
+
+	books = append(books, newBook)
+	c.IndentedJSON(http.StatusCreated, newBook)
+}
+
 func main() {
 	router := gin.Default()
 	router.GET("/books", getBooks)
 	router.GET("/books/:id", bookById)
+	router.POST("/books", createBook)
 	router.Run("localhost:8080")
 }
